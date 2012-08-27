@@ -383,10 +383,7 @@
                     }
                 })();
 
-                var socket = io.connect(document.location.hostname, {
-                    "transports"      : ['websocket', 'xhr-polling'], // bad, bad nginx!
-                    "connect timeout" : 2000 // timeout for switching from websocket to xhr-polling
-                });
+                var socket = io.connect(document.location.hostname+':8080');
 
                 socket.on("logs", function(data) {
                     var selectLog;
