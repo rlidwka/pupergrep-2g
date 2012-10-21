@@ -7,7 +7,7 @@
         <meta name="description" content="">
         <meta name="author" content="">
 
-        <link href="css/bootstrap.css" rel="stylesheet">
+        <link href="css/bootstrap.min.css" rel="stylesheet">
         <style type="text/css">
             body {
                 padding-top: 60px;
@@ -59,6 +59,10 @@
                 width: 90px;
             }
 
+            .pause-button-help {
+                width: 175px;
+            }
+
             #health-icon {
                 margin: 5px 0 0 5px;
             }
@@ -67,7 +71,7 @@
                 margin-left: 5px;
             }
         </style>
-        <link href="css/bootstrap-responsive.css" rel="stylesheet">
+        <link href="css/bootstrap-responsive.min.css" rel="stylesheet">
     </head>
 
     <body>
@@ -112,6 +116,7 @@
                                 <i id="pause-icon" class="icon-pause"></i>
                                 <span id="pause-text">Pause</span>
                             </button>
+                            <span class="help-inline pause-button-help">Select text or press space.</span>
                         </div>
                     </div>
                     <div>
@@ -143,9 +148,25 @@
 
         <script type="text/javascript" src="/js/jquery.js"></script>
         <script type="text/javascript" src="/js/jquery.textext.js"></script>
+        <script type="text/javascript" src="/js/jquery.colorizeConsoleOutput.js"></script>
         <script type="text/javascript" src="/socket.io/socket.io.js"></script>
         <script type="text/javascript">
             jQuery(document).ready(function() {
+                var KEY = window.KEY = {
+                    LEFT: 37,
+                    UP: 38,
+                    RIGHT: 39,
+                    DOWN: 40,
+                    DEL: 8,
+                    TAB: 9,
+                    RETURN: 13,
+                    ENTER: 13,
+                    ESC: 27,
+                    PAGEUP: 33,
+                    PAGEDOWN: 34,
+                    SPACE: 32
+                };
+
                 var logLinesTable     = jQuery("#log-lines"),
                     logsListContainer = jQuery("#logs-list"),
                     logsList          = jQuery(),
@@ -166,6 +187,7 @@
                     currentLogType    = undefined,
                     bufferLength      = 20,
                     outputPaused      = false,
+                    mouseDowned       = false,
                     linkSeparator     = '!!!';
 
                 pauseButton.click(function() {
@@ -342,6 +364,27 @@
                     }, 1000);
                 });
 
+                jQuery(window).keydown(function(e) {
+                    if (e.keyCode == KEY.SPACE && e.target == jQuery('body')[0]) {
+                        pauseButton.click();
+                        return false;
+                    }
+                });
+
+                logLinesTable.mousedown(function() {
+                    if (!outputPaused) {
+                        outputPaused = true;
+                        mouseDowned = true;
+                    }
+                });
+
+                logLinesTable.mouseup(function() {
+                    if (mouseDowned) {
+                        outputPaused = false;
+                        mouseDowned = false;
+                    }
+                });
+
                 (function initFromURI() {
                     function getURLParameter(name) {
                         var value = (RegExp(name + '=' + '(.*?)(&|$)').exec(location.search)||[,null])[1];
@@ -451,6 +494,10 @@
                         });
 
                         line.html(text);
+                    }
+
+                    if (currentLogType == "ansi") {
+                        line.colorizeConsoleOutput();
                     }
 
                     if (!isGrepAcceptedLine(text)) {
