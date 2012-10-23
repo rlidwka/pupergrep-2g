@@ -1,0 +1,61 @@
+            body {
+                padding-top: 60px;
+                padding-bottom: 40px;
+            }
+            .sidebar-nav {
+                padding: 9px 0;
+            }
+
+            .pupergrep-settings-form input {
+                width: 180px;
+                height: auto;
+                -webkit-box-sizing: border-box;
+                -moz-box-sizing: border-box;
+                box-sizing: border-box;
+            }
+            .pupergrep-settings-form input[disabled] {
+                width: 106px;
+            }
+
+            .control-group > div,
+            .control-group > span {
+                vertical-align: middle;
+            }
+
+            .text-tag,
+            .text-button {
+                float: none !important;
+            }
+            .text-button {
+                margin-right: 0 !important;
+            }
+            .text-core {
+                display: inline-block;
+            }
+            .text-tags {
+                padding: 5px !important;
+            }
+
+            #logs-list li.log {
+                cursor: pointer;
+            }
+
+            input#log-name-filter {
+                width: 180px;
+            }
+
+            .right-settings-help {
+                width: 90px;
+            }
+
+            .pause-button-help {
+                width: 175px;
+            }
+
+            #health-icon {
+                margin: 5px 0 0 5px;
+            }
+
+            li.log .heart {
+                margin-left: 5px;
+            }
