@@ -14,7 +14,8 @@ jQuery(document).ready(function() {
 		SPACE: 32
 	};
 
-	var logLinesTable     = jQuery("#log-lines"),
+	var
+		logLinesTable     = jQuery("#log-lines"),
 		logsListContainer = jQuery("#logs-list"),
 		logsList          = jQuery(),
 		pauseButton       = jQuery("#pause-button"),
