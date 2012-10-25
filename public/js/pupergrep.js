@@ -359,7 +359,7 @@ $(document).ready(function() {
 		container.addClass("log-line");
 		container.append(line);
 
-		logLinesTable.append(container);
+		logLinesTable.prepend(container);
 
 		while (true) {
 			lines = logLinesTable.find("tr.log-line");
