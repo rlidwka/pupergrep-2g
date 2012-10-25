@@ -5,7 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "socket.io": ">=0.9.6",
-    "send": ">=0.1.0"
+    "asset-pipeline": "*"
   },
   "devDependencies": {},
   "repository": {

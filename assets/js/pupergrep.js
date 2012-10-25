@@ -58,7 +58,7 @@ $(document).ready(function() {
 	});
 
 	function rebuildCurrentLink() {
-		var url = "/?";
+		var url = document.location.pathname + "?";
 
 		url += "buffer=" + encodeURIComponent($("#buffer-length").val());
 		if ($("#highlight-items").data('tags'))
