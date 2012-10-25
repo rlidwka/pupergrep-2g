@@ -1,3 +1,11 @@
 #!/usr/bin/env node
 
-require('./').start(8080, "127.0.0.1");
+var PuperGrep = require('./');
+
+var logger = new PuperGrep();
+logger.listen(8080, "127.0.0.1");
+
+setInterval(function self() {
+	logger.emit(JSON.stringify({test:Math.random()}));
+}, 1400);
+

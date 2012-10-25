@@ -448,4 +448,9 @@ jQuery(document).ready(function() {
 	});
 
 	window.scrollTo(0, 1);
+
+	//// rlidwka's adds
+	jQuery.on('click', '.log-line', function() {
+
+	});
 });
