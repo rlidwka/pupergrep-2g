@@ -1,4 +1,4 @@
-jQuery(document).ready(function() {
+$(document).ready(function() {
 	var KEY = window.KEY = {
 		LEFT: 37,
 		UP: 38,
@@ -15,18 +15,18 @@ jQuery(document).ready(function() {
 	};
 
 	var
-		logLinesTable     = jQuery("#log-lines"),
-		logsListContainer = jQuery("#logs-list"),
-		logsList          = jQuery(),
-		pauseButton       = jQuery("#pause-button"),
-		logNameFilter     = jQuery("#log-name-filter"),
-		fontSizeSelector  = jQuery("#font-size"),
-		currentLink       = jQuery("#current-link"),
-		taggedInputs      = jQuery('#highlight-items, #grep-items'),
-		joinTypes         = jQuery(".join-type"),
-		grepJoinType      = jQuery("#grep-join-type"),
-		highlightJoinType = jQuery("#highlight-join-type"),
-		healthIcon        = jQuery("#health-icon"),
+		logLinesTable     = $("#log-lines"),
+		logsListContainer = $("#logs-list"),
+		logsList          = $(),
+		pauseButton       = $("#pause-button"),
+		logNameFilter     = $("#log-name-filter"),
+		fontSizeSelector  = $("#font-size"),
+		currentLink       = $("#current-link"),
+		taggedInputs      = $('#highlight-items, #grep-items'),
+		joinTypes         = $(".join-type"),
+		grepJoinType      = $("#grep-join-type"),
+		highlightJoinType = $("#highlight-join-type"),
+		healthIcon        = $("#health-icon"),
 		activeLogHeart    = logsListContainer.find("li.log.active .heart"),
 		logHighlighting   = false,
 		connected         = false,
@@ -39,8 +39,8 @@ jQuery(document).ready(function() {
 		linkSeparator     = '!!!';
 
 	pauseButton.click(function() {
-		var pauseIcon = jQuery("#pause-icon"),
-			pauseText = jQuery("#pause-text");
+		var pauseIcon = $("#pause-icon"),
+			pauseText = $("#pause-text");
 
 		if (!outputPaused) {
 			pauseIcon.removeClass("icon-pause");
@@ -60,12 +60,12 @@ jQuery(document).ready(function() {
 	function rebuildCurrentLink() {
 		var url = "/?";
 
-		url += "buffer=" + encodeURIComponent(jQuery("#buffer-length").val());
-		if (jQuery("#highlight-items").data('tags'))
-			url += "&highlight=" + encodeURIComponent(jQuery("#highlight-items").data('tags').join(linkSeparator));
-		if (jQuery("#grep-items").data('tags'))
-			url += "&grep=" + encodeURIComponent(jQuery("#grep-items").data('tags').join(linkSeparator));
-		url += "&name-filter=" + encodeURIComponent(jQuery("#log-name-filter").val());
+		url += "buffer=" + encodeURIComponent($("#buffer-length").val());
+		if ($("#highlight-items").data('tags'))
+			url += "&highlight=" + encodeURIComponent($("#highlight-items").data('tags').join(linkSeparator));
+		if ($("#grep-items").data('tags'))
+			url += "&grep=" + encodeURIComponent($("#grep-items").data('tags').join(linkSeparator));
+		url += "&name-filter=" + encodeURIComponent($("#log-name-filter").val());
 		url += "&font-size=" + fontSizeSelector.val();
 		url += "&highligh-join=" + highlightJoinType.data("join-type");
 		url += "&grep-join=" + grepJoinType.data("join-type");
@@ -77,8 +77,8 @@ jQuery(document).ready(function() {
 		currentLink.prop("href", url);
 	}
 
-	jQuery("#buffer-length").change(function() {
-		var self  = jQuery(this),
+	$("#buffer-length").change(function() {
+		var self  = $(this),
 			value = parseInt(self.val());
 
 		if (isNaN(value) || value <= 0) {
@@ -103,16 +103,16 @@ jQuery(document).ready(function() {
 		rebuildCurrentLink();
 	});
 
-	jQuery("#font-size-bigger").click(function() {
+	$("#font-size-bigger").click(function() {
 		fontSizeSelector.val(+fontSizeSelector.val() + 1).change();
 	});
 
-	jQuery("#font-size-smaller").click(function() {
+	$("#font-size-smaller").click(function() {
 		fontSizeSelector.val(+fontSizeSelector.val() - 1).change();
 	});
 
 	joinTypes.click(function() {
-		var trigger = jQuery(this),
+		var trigger = $(this),
 			type    = trigger.data("join-type") == "or" ? "and" : "or";
 
 		trigger.data("join-type", type).text(type);
@@ -130,14 +130,14 @@ jQuery(document).ready(function() {
 		}
 	});
 	taggedInputs.bind('setFormData', function(e, data, isEmpty) {
-		var $target = jQuery(e.target);
+		var $target = $(e.target);
 		$target.data('tags', data);
 		rebuildCurrentLink();
 	});
 
 
 	taggedInputs.keyup(function() {
-		var input     = jQuery(this),
+		var input     = $(this),
 			container = input.parent().parent().parent();
 
 		try {
@@ -157,15 +157,15 @@ jQuery(document).ready(function() {
 
 		try {
 			regexp = new RegExp(logNameFilter.val(), "i");
-			jQuery(this).parent().removeClass("error")
+			$(this).parent().removeClass("error")
 		} catch (e) {
-			jQuery(this).parent().addClass("error");
+			$(this).parent().addClass("error");
 			return;
 		}
 
 		logsList.each(function(index, node) {
 			// slow piece of shit
-			var element = jQuery(node);
+			var element = $(node);
 			if (element.data("log-name").match(regexp)) {
 				if (element.is(':hidden')) {
 					element.show()
@@ -181,7 +181,7 @@ jQuery(document).ready(function() {
 	});
 
 	logsListContainer.delegate("li.log", "click", function() {
-		var element = jQuery(this);
+		var element = $(this);
 
 		logHighlighting = true;
 
@@ -200,7 +200,7 @@ jQuery(document).ready(function() {
 
 		activeLogHeart = logsListContainer.find("li.log.active .heart");
 		logsList.each(function(index, node) {
-			var element = jQuery(node);
+			var element = $(node);
 
 			if (!element.hasClass("active")) {
 				element.find(".heart").hide();
@@ -212,8 +212,8 @@ jQuery(document).ready(function() {
 		}, 1000);
 	});
 
-	jQuery(window).keydown(function(e) {
-		if (e.keyCode == KEY.SPACE && e.target == jQuery('body')[0]) {
+	$(window).keydown(function(e) {
+		if (e.keyCode == KEY.SPACE && e.target == $('body')[0]) {
 			pauseButton.click();
 			return false;
 		}
@@ -249,16 +249,16 @@ jQuery(document).ready(function() {
 			highlightJoin = getURLParameter("highligh-join");
 
 		if (buffer) {
-			jQuery("#buffer-length").val(buffer).change();
+			$("#buffer-length").val(buffer).change();
 		}
 		if (highlight) {
-			jQuery("#highlight-items").textext()[0].tags().addTags(highlight.split(linkSeparator));
+			$("#highlight-items").textext()[0].tags().addTags(highlight.split(linkSeparator));
 		}
 		if (grep) {
-			jQuery("#grep-items").textext()[0].tags().addTags(grep.split(linkSeparator));
+			$("#grep-items").textext()[0].tags().addTags(grep.split(linkSeparator));
 		}
 		if (nameFilter) {
-			jQuery("#log-name-filter").val(nameFilter).change();
+			$("#log-name-filter").val(nameFilter).change();
 		}
 		if (fontSize) {
 			fontSizeSelector.val(fontSize).change();
@@ -281,10 +281,10 @@ jQuery(document).ready(function() {
 
 		logsListContainer.children(".log").remove();
 
-		jQuery(data.logs).each(function(index, log) {
-			var container = jQuery("<li>"),
-				link      = jQuery("<a>"),
-				heart     = jQuery("<i>");
+		$(data.logs).each(function(index, log) {
+			var container = $("<li>"),
+				link      = $("<a>"),
+				heart     = $("<i>");
 
 			heart.addClass("icon-heart").addClass("heart").hide();
 			link.text(log.name);
@@ -328,8 +328,8 @@ jQuery(document).ready(function() {
 			});
 		}
 
-		container = jQuery("<tr>");
-		line      = jQuery("<td>");
+		container = $("<tr>");
+		line      = $("<td>");
 
 		if (currentLogType == "html") {
 			line.html(text);
@@ -390,7 +390,7 @@ jQuery(document).ready(function() {
 	}
 
 	function isHighlightedLine(text) {
-		var conditions = jQuery("#highlight-items").data('tags'),
+		var conditions = $("#highlight-items").data('tags'),
 			type       = highlightJoinType.data("join-type");
 
 		if (!conditions || conditions.length == 0) {
@@ -401,7 +401,7 @@ jQuery(document).ready(function() {
 	}
 
 	function isGrepAcceptedLine(text) {
-		var conditions = jQuery("#grep-items").data('tags'),
+		var conditions = $("#grep-items").data('tags'),
 				type   = grepJoinType.data("join-type");
 
 		return isAcceptedByConditionsJoinType(text, conditions, type);
@@ -450,7 +450,7 @@ jQuery(document).ready(function() {
 	window.scrollTo(0, 1);
 
 	//// rlidwka's adds
-	jQuery.on('click', '.log-line', function() {
+	$(window).on('click', '.log-line', function() {
 
 	});
 });
