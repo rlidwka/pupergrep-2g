@@ -72,3 +72,33 @@ li.log .heart {
 	background-color: white;
 }
 
+.log-prefix {
+	display: inline-block;
+	width: 3em;
+	text-align: center;
+}
+
+.log-prefix-fatal {
+	color: #ff0000;
+}
+
+.log-prefix-error {
+	color: #ee0000;
+}
+
+.log-prefix-warn {
+	color: #cc4466;
+}
+
+.log-prefix-info {
+	color: #3366ff;
+}
+
+.log-prefix-debug {
+	color: #bbb;
+}
+
+.log-prefix-trace {
+	color: #ddd;
+}
+

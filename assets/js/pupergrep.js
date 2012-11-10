@@ -32,7 +32,6 @@ $(document).ready(function() {
 		connected         = false,
 		healthIconTimer   = undefined,
 		currentLog        = undefined,
-		currentLogType    = 'ansi',
 		bufferLength      = 20,
 		outputPaused      = false,
 		mouseDowned       = false,
@@ -194,7 +193,6 @@ $(document).ready(function() {
 		});
 
 		currentLog     = element.data("log-name");
-		currentLogType = element.data("log-type");
 
 		rebuildCurrentLink();
 
@@ -337,22 +335,8 @@ $(document).ready(function() {
 		container = $("<tr>");
 		line      = $("<td>");
 
-		if (currentLogType == "html") {
-			line.html(text);
-		} else {
-			// escaping html
-			text = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-			// making some links
-			text = text.replace(/(https?:\/\/[^\s]+)/g, function(url) {
-				return '<a href="' + url + '">' + url + '</a>';
-			});
-
-			line.html(text);
-		}
-
-		if (currentLogType == "ansi") {
-			line.colorizeConsoleOutput();
-		}
+		line.html(text);
+		line.colorizeConsoleOutput();
 
 		if (!isGrepAcceptedLine(text)) {
 			return;
@@ -469,21 +453,9 @@ $(document).ready(function() {
 
 		var text = window.utiljs.inspect(this.origObject, undefined, null, true);
 
-		text = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-		// making some links
-		text = text.replace(/(https?:\/\/[^\s]+)/g, function(url) {
-			return '<a href="' + url + '">' + url + '</a>';
-		});
+		text = html_escape(text);
+		text = replaceLeadingSpace(text);
 
-		text = text.replace(/(^|\n)[ \t]+/g, function(br) {
-			var result = '<br>';
-			for (var i=0; i<br.length; i++) {
-				if (br[i] === ' ') result += '&nbsp;';
-				if (br[i] === '\t') result += '&nbsp;&nbsp;&nbsp;&nbsp;';
-			}
-			return result;
-		});
-		
 		container = $("<tr>");
 		container.addClass('log-object');
 		container.html("<td>"+text+"</td>");
@@ -491,6 +463,17 @@ $(document).ready(function() {
 
 		$(this).after(container);
 	});
+	
+	function replaceLeadingSpace(text) {
+		return text.replace(/(^|\n)[ \t]+/g, function(br) {
+			var result = br[0] == '\n' ? '<br>' : '';
+			for (var i=0; i<br.length; i++) {
+				if (br[i] === ' ') result += '&nbsp;';
+				if (br[i] === '\t') result += '&nbsp;&nbsp;&nbsp;&nbsp;';
+			}
+			return result;
+		});
+	};
 
 	var interpolateObject = (function() {
 		function getlvl(x) {
@@ -508,26 +491,6 @@ $(document).ready(function() {
 				return 'fatal';
 			}
 		}
-
-		// adopted from socket.io
-		var levels = {
-			fatal: 31,
-			error: 31,
-			warn: 33,
-			info: 36,
-			debug: 90,
-			trace: 90
-		};
-
-		var max = 0;
-		for (var l in levels) {
-			max = Math.max(max, l.length);
-		}
-
-		var pad = function pad(str) {
-			if (str.length < max) return str + new Array(max - str.length + 1).join(' ');
-			return str;
-		};
 
 		var print = function print(obj) {
 			var type = obj.level;
@@ -548,16 +511,27 @@ $(document).ready(function() {
 				}
 				return window.utiljs.inspect(str, undefined, undefined, true);
 			});
-			return ("  \x1b[" + levels[type] + "m" + (pad(type)) + " -\x1b[39m ") + finalmsg;
+			return ("<span class=\"log-prefix log-prefix-"+type+"\">" + type + "</span> &ndash; ") + html_escape(finalmsg);
 		};
 
 		return print;
 	})();
 
+	function html_escape(text) {
+		// escaping html
+		text = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+		// making some links
+		text = text.replace(/(https?:\/\/[^\s]+)/g, function(url) {
+			return '<a href="' + url + '">' + url + '</a>';
+		});
+
+		return text;
+	}
+
 	function objectToText(object) {
 		if (typeof(object.msg) === 'string') {
-			return interpolateObject(object);
+			return interpolateObject(object);
 		}
-		return window.utiljs.inspect(object, undefined, null, true);
+		return html_escape(window.utiljs.inspect(object, undefined, null, true));
 	};
 });
