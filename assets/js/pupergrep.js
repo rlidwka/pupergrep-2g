@@ -32,7 +32,7 @@ $(document).ready(function() {
 		connected         = false,
 		healthIconTimer   = undefined,
 		currentLog        = undefined,
-		currentLogType    = undefined,
+		currentLogType    = 'ansi',
 		bufferLength      = 20,
 		outputPaused      = false,
 		mouseDowned       = false,
@@ -311,11 +311,17 @@ $(document).ready(function() {
 		rebuildCurrentLink();
 	});
 
-	function addLogLine(text, isRaw) {
+	function addLogLine(text) {
 		var logHeart = activeLogHeart,
 			lines,
 			container,
-			line;
+			line,
+			origObject;
+
+		if (typeof(text) == 'object') {
+			origObject = text;
+			text = objectToText(text);
+		}
 
 		if (!logHighlighting) {
 			logHighlighting = true;
@@ -335,7 +341,7 @@ $(document).ready(function() {
 			line.html(text);
 		} else {
 			// escaping html
-			text = text.split("&").join("&amp;").split( "<").join("&lt;").split(">").join("&gt;");
+			text = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 			// making some links
 			text = text.replace(/(https?:\/\/[^\s]+)/g, function(url) {
 				return '<a href="' + url + '">' + url + '</a>';
@@ -358,13 +364,18 @@ $(document).ready(function() {
 
 		container.addClass("log-line");
 		container.append(line);
+		container[0].origObject = origObject;
 
 		logLinesTable.prepend(container);
 
 		while (true) {
 			lines = logLinesTable.find("tr.log-line");
 			if (lines.length > bufferLength) {
-				lines.first().remove();
+				var toremove = lines.last();
+				if (toremove.next().hasClass('log-object')) {
+					toremove.next().remove();
+				}
+				lines.last().remove();
 			} else {
 				break;
 			}
@@ -451,6 +462,102 @@ $(document).ready(function() {
 
 	//// rlidwka's adds
 	$(window).on('click', '.log-line', function() {
+		if ($(this).next().hasClass('log-object')) {
+			$(this).next().remove();
+			return;
+		}
 
+		var text = window.utiljs.inspect(this.origObject, undefined, null, true);
+
+		text = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+		// making some links
+		text = text.replace(/(https?:\/\/[^\s]+)/g, function(url) {
+			return '<a href="' + url + '">' + url + '</a>';
+		});
+
+		text = text.replace(/(^|\n)[ \t]+/g, function(br) {
+			var result = '<br>';
+			for (var i=0; i<br.length; i++) {
+				if (br[i] === ' ') result += '&nbsp;';
+				if (br[i] === '\t') result += '&nbsp;&nbsp;&nbsp;&nbsp;';
+			}
+			return result;
+		});
+		
+		container = $("<tr>");
+		container.addClass('log-object');
+		container.html("<td>"+text+"</td>");
+		container.colorizeConsoleOutput();
+
+		$(this).after(container);
 	});
+
+	var interpolateObject = (function() {
+		function getlvl(x) {
+			if (x < 15) {
+				return 'trace';
+			} else if (x < 25) {
+				return 'debug';
+			} else if (x < 35) {
+				return 'info';
+			} else if (x < 45) {
+				return 'warn';
+			} else if (x < 55) {
+				return 'error';
+			} else {
+				return 'fatal';
+			}
+		}
+
+		// adopted from socket.io
+		var levels = {
+			fatal: 31,
+			error: 31,
+			warn: 33,
+			info: 36,
+			debug: 90,
+			trace: 90
+		};
+
+		var max = 0;
+		for (var l in levels) {
+			max = Math.max(max, l.length);
+		}
+
+		var pad = function pad(str) {
+			if (str.length < max) return str + new Array(max - str.length + 1).join(' ');
+			return str;
+		};
+
+		var print = function print(obj) {
+			var type = obj.level;
+			var msg = obj.msg;
+			var finalmsg;
+			if (typeof type === 'number') type = getlvl(type);
+			finalmsg = msg.replace(/@{([$A-Za-z_][$0-9A-Za-z\._]*)}/g, function(_, name) {
+				var id, str, _i, _len, _ref;
+				str = obj;
+				_ref = name.split('\.');
+				for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+					id = _ref[_i];
+					if (typeof str === 'object') {
+						str = str[id];
+					} else {
+						str = void 0;
+					}
+				}
+				return window.utiljs.inspect(str, undefined, undefined, true);
+			});
+			return ("  \x1b[" + levels[type] + "m" + (pad(type)) + " -\x1b[39m ") + finalmsg;
+		};
+
+		return print;
+	})();
+
+	function objectToText(object) {
+		if (typeof(object.msg) === 'string') {
+			return interpolateObject(object);
+		}
+		return window.utiljs.inspect(object, undefined, null, true);
+	};
 });

@@ -1,0 +1,8 @@
+// CommonJS wrapper for util.js
+
+window.utiljs = (function(module) {
+	var exports = {}, module = {exports:exports}, process = {};
+	<%- asset_include('./_util.js') %>
+	return module.exports;
+})();
+

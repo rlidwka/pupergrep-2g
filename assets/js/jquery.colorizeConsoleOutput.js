@@ -12,7 +12,7 @@
         30: 'black',
         31: 'red',
         32: 'green',
-        33: 'yellow',
+        33: 'brown',
         34: 'blue',
         35: 'magenta',
         36: 'cyan',
