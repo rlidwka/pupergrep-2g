@@ -4,9 +4,9 @@ var mongode = require('mongode');
 var PuperGrep = require('./');
 
 var logger = new PuperGrep();
-logger.listen(8080, "127.0.0.1");
+logger.listen(8080, "0.0.0.0");
 
-var db = mongode.connect("mongo://127.0.0.1/broadsend", {server: {auto_reconnect: true}});
+var db = mongode.connect("mongodb://127.0.0.1/broadsend", {server: {auto_reconnect: true}});
 db.collection('logs');
 
 logger.on('connection', function(client) {

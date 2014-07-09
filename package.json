@@ -5,7 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "socket.io": ">=0.9.6",
-    "asset-pipeline": "*",
+    "mincer": "*",
     "ejs": "*"
   },
   "devDependencies": {},

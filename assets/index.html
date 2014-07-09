@@ -7,7 +7,7 @@
 		<meta name="description" content="">
 		<meta name="author" content="">
 
-		<link href="<%= asset_uri('/pupergrep.css') %>" rel="stylesheet">
+		<link href="'$$ asset_path('pupergrep.css') $$'" rel="stylesheet">
 	</head>
 
 	<body>
@@ -83,6 +83,6 @@
 		</div>
 
 		<script type="text/javascript" src="/socket.io/socket.io.js"></script>
-		<script type="text/javascript" src="<%= asset_uri('/pupergrep.js') %>"></script>
+		<script type="text/javascript" src="'$$ asset_path('pupergrep.js') $$'"></script>
 	</body>
 </html>

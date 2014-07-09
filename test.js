@@ -3,9 +3,16 @@
 var PuperGrep = require('./');
 
 var logger = new PuperGrep();
-logger.listen(8080, "127.0.0.1");
+logger.listen(8080, "0.0.0.0");
 
-setInterval(function self() {
-	logger.emit({test:Math.random()});
-}, 1400);
+logger.on('connection', function(client) {
+	var connected = true;
+	client.on('disconnect', function() {
+		connected = false;
+	});
+
+	setInterval(function self() {
+		client.send({test:Math.random()});
+	}, 1400);
+});
 
